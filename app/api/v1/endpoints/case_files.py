@@ -1,6 +1,7 @@
 from fastapi import APIRouter, HTTPException, status, Response
 from app.models.schemas import (
     CaseFileRequest, CaseFileResponse, CasePDFRequest, 
+    CaseJudgementPDFRequest, CaseJudgementPDFResponse,
     ErrorResponse
 )
 from app.services.kerala_courts_service import KeralaCourtsService
@@ -103,6 +104,36 @@ async def download_interim_pdf(pdf_url: str) -> Response:
                 "Content-Disposition": f"attachment; filename={filename}"
             }
         )
+    except ValueError as e:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=str(e)
+        )
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Internal server error: {str(e)}"
+        )
+
+
+@router.post(
+    "/judgement-pdf",
+    response_model=CaseJudgementPDFResponse,
+    status_code=status.HTTP_200_OK,
+    responses={
+        400: {"model": ErrorResponse, "description": "Bad Request"},
+        500: {"model": ErrorResponse, "description": "Internal Server Error"}
+    }
+)
+async def get_case_judgement_pdf(request: CaseJudgementPDFRequest) -> CaseJudgementPDFResponse:
+    """
+    Get case judgement PDF URL.
+    
+    Requires vieworder token from case details.
+    Returns the PDF URL and HTML content containing the PDF object.
+    """
+    try:
+        return service.get_case_judgement_pdf(request)
     except ValueError as e:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,

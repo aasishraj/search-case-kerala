@@ -74,6 +74,16 @@ class CaseTypeResponse(BaseModel):
     total_count: int = Field(..., description="Total count of case types")
 
 
+class CaseJudgementPDFRequest(BaseModel):
+    """Request model for case judgement PDF"""
+    token: str = Field(..., description="Vieworder token for judgement PDF access")
+
+
+class CaseJudgementPDFResponse(BaseModel):
+    """Response model for case judgement PDF"""
+    pdf_url: Optional[str] = Field(None, description="PDF URL extracted from response")
+
+
 class ErrorResponse(BaseModel):
     """Error response model"""
     error: str = Field(..., description="Error message")

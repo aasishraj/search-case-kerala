@@ -7,7 +7,8 @@ from app.models.schemas import (
     CaseDetailsRequest, CaseDetailsResponse,
     CaseProceedingsRequest, CaseProceedingsResponse,
     CaseFileRequest, CaseFileResponse,
-    CasePDFRequest, CasePDFResponse
+    CasePDFRequest, CasePDFResponse,
+    CaseJudgementPDFRequest, CaseJudgementPDFResponse
 )
 
 
@@ -21,6 +22,7 @@ class KeralaCourtsService:
     FOURTH_URI = f"{BASE_URL}/digicourt/index.php/Queryproceedings/getProceedings"
     FIFTH_URI = f"{BASE_URL}/digicourt/Casedetailssearch/printz"
     SIXTH_URI = f"{BASE_URL}/digicourt/Casedetailssearch/fileview"
+    SEVENTH_URI = f"{BASE_URL}/digicourt/Casedetailssearch/fileviewcitation"
     
     def __init__(self):
         self.session = requests.Session()
@@ -211,3 +213,25 @@ class KeralaCourtsService:
             raise ValueError(f"Failed to download interim PDF: {str(e)}")
         except Exception as e:
             raise ValueError(f"Error downloading interim PDF: {str(e)}")
+
+    def get_case_judgement_pdf(self, request: CaseJudgementPDFRequest) -> CaseJudgementPDFResponse:
+        """Get case judgement PDF URL"""
+        try:
+            response = self.session.get(
+                self.SEVENTH_URI,
+                params={'token': request.token},
+                headers={'Referer': self.FIRST_URI},
+                timeout=30
+            )
+            response.raise_for_status()
+            
+            pdf_url = self._extract_pdf_url(response.text)
+            
+            return CaseJudgementPDFResponse(
+                pdf_url=pdf_url
+            )
+            
+        except requests.RequestException as e:
+            raise ValueError(f"Failed to get case judgement PDF: {str(e)}")
+        except Exception as e:
+            raise ValueError(f"Error processing case judgement PDF: {str(e)}")
