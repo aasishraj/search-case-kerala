@@ -12,24 +12,21 @@ service = KeralaCourtsService()
     status_code=status.HTTP_200_OK,
     responses={
         400: {"model": ErrorResponse, "description": "Bad Request"},
-        500: {"model": ErrorResponse, "description": "Internal Server Error"}
-    }
+        500: {"model": ErrorResponse, "description": "Internal Server Error"},
+    },
 )
 async def get_case_details(request: CaseDetailsRequest) -> CaseDetailsResponse:
     """
     Get detailed case information including HTML content and vieworder parameters.
-    
+
     Requires CINO and case number from a previous case search.
     """
     try:
         return service.get_case_details(request)
     except ValueError as e:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail=str(e)
-        )
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Internal server error: {str(e)}"
+            detail=f"Internal server error: {str(e)}",
         )

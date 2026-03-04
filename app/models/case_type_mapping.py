@@ -347,5 +347,5 @@ CASE_TYPE_MAPPING = {
     243: "ZOP(FT)",
     245: "ZOP(KAT)",
     249: "ZOP STAT",
-    260: "ZRFA(MISC.)"
+    260: "ZRFA(MISC.)",
 }
